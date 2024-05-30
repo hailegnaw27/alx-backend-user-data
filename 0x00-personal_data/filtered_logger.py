@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Module for filtering log data and securely logging PII data
+Module for filtering log data and securely
 """
 
 import re
@@ -10,13 +10,19 @@ import mysql.connector
 from typing import List
 
 # Task 0: Regex-ing
-def filter_datum(fields: List[str], redaction: str, message: str, separator: str) -> str:
+
+
+def filter_datum(
+        fields: List[str],
+        redaction: str,
+        message: str,
+        separator: str) -> str:
     """
-    Replaces values of specified fields in the log message with a redaction string.
+    Replaces values of specified fields in the log.
 
     Args:
         fields (List[str]): List of field names to redact.
-        redaction (str): The string to replace the field values with.
+        redaction (str): The string to replace the.
         message (str): The log message.
         separator (str): The field separator in the log message.
 
@@ -24,7 +30,8 @@ def filter_datum(fields: List[str], redaction: str, message: str, separator: str
         str: The redacted log message.
     """
     for field in fields:
-        message = re.sub(r'{}=.*?{}'.format(field, separator), '{}={}'.format(field, redaction), message)
+        message = re.sub(r'{}=.*?{}'.format(field, separator),
+                         '{}={}'.format(field, redaction), message)
     return message
 
 
@@ -34,7 +41,7 @@ class RedactingFormatter(logging.Formatter):
     """
 
     REDACTION = "***"
-    FORMAT = "[HOLBERTON] %(name)s %(levelname)s %(asctime)-15s: %(message)s"
+    FORMAT = "[HOLBERTON] %(name)s %(levelname)s
     SEPARATOR = ";"
 
     def __init__(self, fields: List[str]):
@@ -51,12 +58,17 @@ class RedactingFormatter(logging.Formatter):
         Returns:
             str: The formatted log record.
         """
-        record.msg = filter_datum(self.fields, self.REDACTION, record.msg, self.SEPARATOR)
+        record.msg = filter_datum(
+            self.fields,
+            self.REDACTION,
+            record.msg,
+            self.SEPARATOR)
         return super(RedactingFormatter, self).format(record)
 
 
 # Task 2: Create logger
 PII_FIELDS = ("name", "email", "phone", "ssn", "password")
+
 
 def get_logger() -> logging.Logger:
     """
@@ -78,10 +90,10 @@ def get_logger() -> logging.Logger:
 # Task 3: Connect to secure database
 def get_db() -> mysql.connector.connection.MySQLConnection:
     """
-    Connects to the MySQL database using credentials from environment variables.
+    Connects to the MySQL database using credentials.
 
     Returns:
-        mysql.connector.connection.MySQLConnection: The database connection object.
+        mysql.connector.connection.MySQLConnection:
     """
     username = os.getenv("PERSONAL_DATA_DB_USERNAME", "root")
     password = os.getenv("PERSONAL_DATA_DB_PASSWORD", "")
@@ -99,7 +111,7 @@ def get_db() -> mysql.connector.connection.MySQLConnection:
 # Task 4: Read and filter data
 def main():
     """
-    Retrieves all rows from the users table and displays each row
+    Retrieves all rows from the users table
     under a filtered format.
     """
     db = get_db()
@@ -110,12 +122,16 @@ def main():
     logger = get_logger()
 
     for row in cursor:
-        message = '; '.join(f"{field}={value}" for field, value in zip(field_names, row)) + ';'
+        message = '; '.join(
+            f"{field}={value}" for field,
+            value in zip(
+                field_names,
+                row)) + ';'
         logger.info(message)
 
     cursor.close()
     db.close()
 
+
 if __name__ == "__main__":
     main()
-
