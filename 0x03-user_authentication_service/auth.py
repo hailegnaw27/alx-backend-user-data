@@ -38,7 +38,9 @@ class Auth:
         """Validates user login."""
         try:
             user = self._db.find_user_by(email=email)
-            return bcrypt.checkpw(password.encode("utf-8"), user.hashed_password)
+            return bcrypt.checkpw(
+                password.encode("utf-8"),
+                user.hashed_password)
         except NoResultFound:
             return False
 
@@ -81,7 +83,9 @@ class Auth:
         try:
             user = self._db.find_user_by(reset_token=reset_token)
             new_password_hash = _hash_password(password)
-            self._db.update_user(user.id, hashed_password=new_password_hash, reset_token=None)
+            self._db.update_user(
+                user.id,
+                hashed_password=new_password_hash,
+                reset_token=None)
         except NoResultFound:
             raise ValueError()
-

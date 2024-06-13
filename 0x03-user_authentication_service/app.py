@@ -7,6 +7,7 @@ from auth import Auth
 app = Flask(__name__)
 AUTH = Auth()
 
+
 @app.route("/", methods=["GET"], strict_slashes=False)
 def index() -> str:
     """Home route
@@ -14,6 +15,7 @@ def index() -> str:
         JSON with a welcome message.
     """
     return jsonify({"message": "Bienvenue"})
+
 
 @app.route("/users", methods=["POST"], strict_slashes=False)
 def users() -> str:
@@ -28,6 +30,7 @@ def users() -> str:
         return jsonify({"email": email, "message": "user created"})
     except ValueError:
         return jsonify({"message": "email already registered"}), 400
+
 
 @app.route("/sessions", methods=["POST"], strict_slashes=False)
 def login() -> str:
@@ -44,6 +47,7 @@ def login() -> str:
     response.set_cookie("session_id", session_id)
     return response
 
+
 @app.route("/sessions", methods=["DELETE"], strict_slashes=False)
 def logout() -> str:
     """User logout
@@ -57,6 +61,7 @@ def logout() -> str:
     AUTH.destroy_session(user.id)
     return redirect("/")
 
+
 @app.route("/profile", methods=["GET"], strict_slashes=False)
 def profile() -> str:
     """User profile
@@ -68,6 +73,7 @@ def profile() -> str:
     if user is None:
         abort(403)
     return jsonify({"email": user.email})
+
 
 @app.route("/reset_password", methods=["POST"], strict_slashes=False)
 def get_reset_password_token() -> str:
@@ -81,6 +87,7 @@ def get_reset_password_token() -> str:
     except ValueError:
         abort(403)
     return jsonify({"email": email, "reset_token": reset_token})
+
 
 @app.route("/reset_password", methods=["PUT"], strict_slashes=False)
 def update_password() -> str:
@@ -97,6 +104,6 @@ def update_password() -> str:
         abort(403)
     return jsonify({"email": email, "message": "Password updated"})
 
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
-
